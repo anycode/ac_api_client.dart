@@ -1,4 +1,4 @@
-library dev.anycode.dart.http_client;
+library dev.anycode.dart.api_client;
 
 export 'package:cancellation_token_http/http.dart';
 export 'package:http_extensions/http_extensions.dart';

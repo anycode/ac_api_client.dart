@@ -1,4 +1,4 @@
-import 'package:ac_http_client/src/response_ext.dart';
+import 'package:ac_api_client/src/response_ext.dart';
 import 'package:cancellation_token_http/http.dart' as http;
 
 import 'model/paged.dart';
