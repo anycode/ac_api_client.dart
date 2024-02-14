@@ -60,13 +60,6 @@ dev_dependencies:
   json_serializable: ^6.7.1
 
 dependency_overrides:
-  http_extensions:
-    # use version compatible with sound null safety
-    #path: ../../../dart/lib/http_extensions/http_extensions
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions
-      ref: cancelable
   meta: 1.10.0
 
 # For information on the generic Dart part of this file, see the
