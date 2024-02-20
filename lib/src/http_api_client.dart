@@ -20,16 +20,41 @@ import 'model/api_exception.dart';
 import 'model/media.dart';
 import 'model/multipart.dart';
 
+/// Base class for all HTTP clients.
+/// Contains error handling and logging extensions. Uses [http_extensions] packages (with request cancellation patch)
+/// for processing HTTP requests, adding headers, retrying requests and logging.
 class HttpApiClient extends AcApiClient {
+  /// HTTP client which processes all requests.
   final Client _client;
+
+  /// Handler for errors. If the response code is not in the 2xx range, the error will be passed to the handler.
+  /// If the handler is not set, default handler will log the error and an [ApiException] will be thrown.
   final ErrorHandler? errorHandler;
+
+  /// Logger for errors. If not set, [logger] will be used.
   final Logger? errorLogger;
+
+  /// Default timeout for all requests.
   final Duration? defaultTimeout;
 
+  /// Map of cancellation tokens for each request.
   final cancellationTokens = <String, CancellationToken>{};
 
+  /// Creates an HTTP client with [inner] [BaseClient]. Either [baseUri] or [uriBuilder] must be specified for proper
+  /// construction of the request URIs. See [AcApiClient] for more details.
+  /// [logOptions] contains options for logging HTTP extension. [headersOptions] contains options for headers HTTP extension,
+  /// default is to add `Content-Type` header with value `application/json`.
+  /// [retryOptions] contains options for retry HTTP extension, default is to retry 3 times with 5 seconds delay.
+  /// [logger] is default logger for all extensions. [baseUrlLogger] is logger for [BaseUrlExtension], if not specified
+  /// [logger] is used. [retryLogger] is logger for [RetryExtension], if not specified [logger] is used. [headerLogger] is
+  /// logger for [HeadersExtension], if not specified [logger] is used. [performanceLogger] is logger for [PerformanceExtension],
+  /// if not specified [logger] is used. [httpLogger] is logger for [LogExtension], if not specified [logger] is used.
+  /// [errorLogger] is a logger used in default error handler, if not specified [logger] is used.
+  /// [errorHandler] is a custom handler for errors.
   HttpApiClient({
     super.baseUri,
+    super.uriBuilder,
+    super.defaultContentType,
     required BaseClient inner,
     LogOptions? logOptions,
     HeadersOptions? headersOptions,
@@ -41,7 +66,6 @@ class HttpApiClient extends AcApiClient {
     Logger? performanceLogger,
     Logger? httpLogger,
     Logger? errorLogger,
-    super.uriBuilder,
     this.errorHandler,
     this.defaultTimeout = const Duration(minutes: 5),
   })  : errorLogger = errorLogger ?? logger ?? Logger('Error'),
@@ -129,6 +153,7 @@ class HttpApiClient extends AcApiClient {
     );
   }
 
+  @override
   Future<Response> postMultipart(
     path, {
     String? host,
@@ -172,6 +197,7 @@ class HttpApiClient extends AcApiClient {
     );
   }
 
+  @override
   Future<Response> putMultipart(
     path, {
     String? host,
@@ -215,6 +241,7 @@ class HttpApiClient extends AcApiClient {
     );
   }
 
+  @override
   Future<Response> patchMultipart(
     path, {
     String? host,
@@ -224,7 +251,7 @@ class HttpApiClient extends AcApiClient {
     Map<String, String>? queryParameters,
     Duration? timeout,
     bool cancelRunning = false,
-  }) async {
+  }) {
     return _sendMultipart(
       'PATCH',
       uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
@@ -242,7 +269,7 @@ class HttpApiClient extends AcApiClient {
     String? host,
     String? url,
     Map<String, String>? headers,
-    dynamic body,
+    body,
     Encoding? encoding,
     Map<String, String>? queryParameters,
     Duration? timeout,
@@ -259,12 +286,13 @@ class HttpApiClient extends AcApiClient {
     );
   }
 
+  @override
   Future<Response> exec(
     String path, {
     String? host,
     String? url,
     Map<String, String>? headers,
-    dynamic body,
+    body,
     Encoding? encoding,
     Map<String, String>? queryParameters,
     Duration? timeout,
@@ -272,6 +300,98 @@ class HttpApiClient extends AcApiClient {
   }) {
     return _sendUnstreamed(
       'EXEC',
+      uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+      body: body,
+      encoding: encoding,
+      headers: headers,
+      timeout: timeout,
+      cancelRunning: cancelRunning,
+    );
+  }
+
+  @override
+  Future<Response> purge(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return _sendUnstreamed(
+      'PURGE',
+      uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+      body: body,
+      encoding: encoding,
+      headers: headers,
+      timeout: timeout,
+      cancelRunning: cancelRunning,
+    );
+  }
+
+  @override
+  Future<Response> reset(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return _sendUnstreamed(
+      'RESET',
+      uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+      body: body,
+      encoding: encoding,
+      headers: headers,
+      timeout: timeout,
+      cancelRunning: cancelRunning,
+    );
+  }
+
+  @override
+  Future<Response> lock(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return _sendUnstreamed(
+      'LOCK',
+      uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+      body: body,
+      encoding: encoding,
+      headers: headers,
+      timeout: timeout,
+      cancelRunning: cancelRunning,
+    );
+  }
+
+  @override
+  Future<Response> unlock(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return _sendUnstreamed(
+      'UNLOCK',
       uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
       body: body,
       encoding: encoding,
@@ -303,19 +423,37 @@ class HttpApiClient extends AcApiClient {
 
     if (headers != null) request.headers.addAll(headers);
     if (encoding != null) request.encoding = encoding;
+    final contentType = request.headers['content-type'] ?? defaultContentType.value;
     if (body != null) {
       if (body is String) {
+        // raw body already as a string
         request.body = body;
+      } else if (body is List<int>) {
+        // raw body already as a list of bytes
+        request.bodyBytes = body;
       } else if (body is List) {
-        request.bodyBytes = body.cast<int>();
-      } else if (body is Map) {
-        if (request.headers.containsKey('content-type') &&
-            [ContentType.json.value, ContentTypeExt.errorJson.value].contains(request.headers['content-type'])) {
+        // list of other types - encode as json or stringify
+        if ([ContentType.json.value, ContentTypeExt.errorJson.value].contains(contentType)) {
           request.body = json.encode(body);
         } else {
-          request.bodyFields = body.cast<String, String>();
+          request.body = body.toString();
         }
+      } else if (body is Map) {
+        // map of objects - encode as json or form data or stringify
+        if ([ContentType.json.value, ContentTypeExt.errorJson.value].contains(contentType)) {
+          request.body = json.encode(body);
+        } else if (ContentTypeExt.formUrlEncoded.value == contentType) {
+          request.bodyFields = body.cast<String, String>();
+        } else if (ContentTypeExt.formData.value == contentType) {
+          request.body = body.entries.map((entry) => '${entry.key}=${entry.value}').join('&');
+        } else {
+          request.body = body.toString();
+        }
+      } else if (ContentType.json.value == contentType) {
+        // other types - encode as json
+        request.body = json.encode(body);
       } else {
+        // unknown body type
         throw ArgumentError('Invalid request body "$body".');
       }
     }

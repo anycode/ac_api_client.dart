@@ -7,11 +7,12 @@ import 'package:cancellation_token_http/testing.dart';
 import 'package:flutter/services.dart';
 
 import 'ac_api_client.dart';
+import 'model/multipart.dart';
 
 /// Api client for testing purposes.
-/// 
+///
 /// Deprecated: Use MockApiClient instead, which offers the same functionality and adds functionality of HttpApiClient with all logging methods.
-/// 
+///
 /// This API client implements API client with mock functionality. It takes an optional constructor argument with a mock handler,
 /// which takes a request and returns a response. It's possible to pass a `baseUri` and `uriBuilder` to the constructor.
 ///
@@ -22,29 +23,51 @@ import 'ac_api_client.dart';
 /// E.g. request url `https://example.com/api/v1/user` will read mock data from `assets/mock/responses/example.com/api-v1-user.json`.
 @Deprecated('Use MockApiClient instead')
 class MockApiClientDeprecated extends AcApiClient {
-
   /// Mock client handler to handle requests and return responses.
   MockClientHandler mockClientHandler;
 
   /// Creates a mock API client with optional mock client handler. If no handler is provided, the default mock handler is used.
-  MockApiClientDeprecated({super.baseUri, super.uriBuilder, this.mockClientHandler = defaultMockHandler});
+  MockApiClientDeprecated({
+    super.baseUri,
+    super.uriBuilder,
+    super.defaultContentType,
+    this.mockClientHandler = defaultMockHandler,
+  });
 
   /// Mocked GET method to read data
   @override
-  Future<Response> get(String path, {String? host, String? url, Map<String, String>? headers, Map<String, dynamic>? queryParameters}) {
+  Future<Response> get(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    Map<String, dynamic>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
     return mockClientHandler(
       buildRequest(
         'GET',
         uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
         headers: headers,
+        defaultContentType: defaultContentType,
       ),
     );
   }
 
   /// Mocked POST method to post data and read response
   @override
-  Future<Response> post(String path,
-      {String? host, String? url, Map<String, String>? headers, body, Encoding? encoding, Map<String, String>? queryParameters}) {
+  Future<Response> post(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
     return mockClientHandler(
       buildRequest(
         'POST',
@@ -52,14 +75,46 @@ class MockApiClientDeprecated extends AcApiClient {
         headers: headers,
         encoding: encoding,
         body: body,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> postMultipart(
+    path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    List<MultipartField>? fields,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'POST',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        headers: headers,
+        fields: fields,
+        defaultContentType: defaultContentType,
       ),
     );
   }
 
   /// Mocked PUT method to put data
   @override
-  Future<Response> put(String path,
-      {String? host, String? url, Map<String, String>? headers, body, Encoding? encoding, Map<String, String>? queryParameters}) {
+  Future<Response> put(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
     return mockClientHandler(
       buildRequest(
         'PUT',
@@ -67,14 +122,46 @@ class MockApiClientDeprecated extends AcApiClient {
         headers: headers,
         encoding: encoding,
         body: body,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> putMultipart(
+    path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    List<MultipartField>? fields,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'PUT',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        headers: headers,
+        fields: fields,
+        defaultContentType: defaultContentType,
       ),
     );
   }
 
   /// Mocked PATCH method to patch data
   @override
-  Future<Response> patch(String path,
-      {String? host, String? url, Map<String, String>? headers, body, Encoding? encoding, Map<String, String>? queryParameters}) {
+  Future<Response> patch(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
     return mockClientHandler(
       buildRequest(
         'PATCH',
@@ -82,43 +169,223 @@ class MockApiClientDeprecated extends AcApiClient {
         headers: headers,
         encoding: encoding,
         body: body,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> patchMultipart(
+    path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    List<MultipartField>? fields,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'PATCH',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        headers: headers,
+        fields: fields,
+        defaultContentType: defaultContentType,
       ),
     );
   }
 
   /// Mocked DELETE method to delete data
   @override
-  Future<Response> delete(String path,
-      {String? host, String? url, Map<String, String>? headers, dynamic body, Map<String, String>? queryParameters}) async {
+  Future<Response> delete(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
     return mockClientHandler(
       buildRequest(
         'DELETE',
         uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
         headers: headers,
         body: body,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> exec(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'EXEC',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        body: body,
+        encoding: encoding,
+        headers: headers,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> purge(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'PURGE',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        body: body,
+        encoding: encoding,
+        headers: headers,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> reset(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'RESET',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        body: body,
+        encoding: encoding,
+        headers: headers,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> lock(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'LOCK',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        body: body,
+        encoding: encoding,
+        headers: headers,
+        defaultContentType: defaultContentType,
+      ),
+    );
+  }
+
+  @override
+  Future<Response> unlock(
+    String path, {
+    String? host,
+    String? url,
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Map<String, String>? queryParameters,
+    Duration? timeout,
+    bool cancelRunning = false,
+  }) {
+    return mockClientHandler(
+      buildRequest(
+        'UNLOCK',
+        uriBuilder(url: url, host: host, path: path, queryParameters: queryParameters),
+        body: body,
+        encoding: encoding,
+        headers: headers,
+        defaultContentType: defaultContentType,
       ),
     );
   }
 
   /// Method to build a request from parameters
-  static Request buildRequest(String method, Uri url, {Map<String, String>? headers, Object? body, Encoding? encoding, Duration? timeout}) {
+  static Request buildRequest(
+    String method,
+    Uri url, {
+    Map<String, String>? headers,
+    body,
+    Encoding? encoding,
+    Duration? timeout,
+    List<MultipartField>? fields,
+    required ContentType defaultContentType,
+  }) {
     final request = Request(method, url);
 
     if (headers != null) request.headers.addAll(headers);
     if (encoding != null) request.encoding = encoding;
+    final contentType = request.headers['content-type'] ?? defaultContentType.value;
     if (body != null) {
       if (body is String) {
+        // raw body already as a string
         request.body = body;
+      } else if (body is List<int>) {
+        // raw body already as a list of bytes
+        request.bodyBytes = body;
       } else if (body is List) {
-        request.bodyBytes = body.cast<int>();
-      } else if (body is Map) {
-        if (request.headers.containsKey('content-type') &&
-            [ContentType.json.value, ContentTypeExt.errorJson.value].contains(request.headers['content-type'])) {
+        // list of other types - encode as json or stringify
+        if ([ContentType.json.value, ContentTypeExt.errorJson.value].contains(contentType)) {
           request.body = json.encode(body);
         } else {
-          request.bodyFields = body.cast<String, String>();
+          request.body = body.toString();
         }
+      } else if (body is Map) {
+        // map of objects - encode as json or form data or stringify
+        if ([ContentType.json.value, ContentTypeExt.errorJson.value].contains(contentType)) {
+          request.body = json.encode(body);
+        } else if (ContentTypeExt.formUrlEncoded.value == contentType) {
+          request.bodyFields = body.cast<String, String>();
+        } else if (ContentTypeExt.formData.value == contentType) {
+          request.body = body.entries.map((entry) => '${entry.key}=${entry.value}').join('&');
+        } else {
+          request.body = body.toString();
+        }
+      } else if (ContentType.json.value == contentType) {
+        // other types - encode as json
+        request.body = json.encode(body);
       } else {
+        // unknown body type
         throw ArgumentError('Invalid request body "$body".');
       }
     }
