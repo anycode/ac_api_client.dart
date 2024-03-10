@@ -2,9 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:ac_api_client/ac_api_client.dart';
-import 'package:cancellation_token_http/http.dart';
-
-import 'model/multipart.dart';
 
 /// Method signature for URI builder. Takes parameters passed to `get`, `post`, `put`, `patch` and `delete` methods and returns a URI.
 typedef UriBuilder = Uri Function({String? url, String? host, int? port, String? path, Map<String, dynamic>? queryParameters});
