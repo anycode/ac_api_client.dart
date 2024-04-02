@@ -1,4 +1,11 @@
 dependency_overrides:
 #  ac_dart:
-#    path: ../ac_dart
-  meta: 1.10.0
+#    git:
+#      url: https://github.com/anycode/ac_dart.dart.git
+#      ref: v0.1.6
+#    #path: ../ac_dart
+#  oauth2: #^2.0.1
+#    git:
+#      url: https://github.com/anycode/oauth2.git
+#      ref: cancelable
+#  meta: 1.10.0

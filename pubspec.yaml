@@ -3,56 +3,41 @@ description: AnyCode Dart API client (HTTP client with cancelable requests)
 version: 0.1.4
 homepage: https://github.com/anycode/ac_api_client.dart
 repository: https://github.com/anycode/ac_api_client.dart
-publish_to: 'none'
+publish_to: https://pub.anycode.dev
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
 
 dependencies:
   ac_dart:
-    git:
-      url: https://github.com/anycode/ac_dart.dart.git
-      ref: v0.1.6
+    hosted: https://pub.anycode.dev
+    version: ^0.1.6
   cancellation_token_http: ^2.0.0
-  cross_file: ^0.3.3+8
-  http_extensions: #^1.1.0
-    #path: ../../../../dart/lib/http_extensions/http_extensions
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions
-      ref: cancelable
-  http_extensions_base_url: #^1.1.0
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions_base_url
-      ref: cancelable
-  http_extensions_cache: #^1.1.0
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions_cache
-      ref: cancelable
-  http_extensions_headers: #^1.1.0
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions_headers
-      ref: cancelable
-  http_extensions_log: #^1.1.0
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions_log
-      ref: cancelable
-  http_extensions_retry: #^1.0.0
-    git:
-      url: https://github.com/anycode/http_extensions.git
-      path: http_extensions_retry
-      ref: cancelable
+  cross_file: ^0.3.4+1
+  http_extensions:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
+  http_extensions_base_url:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
+  http_extensions_cache:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
+  http_extensions_headers:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
+  http_extensions_log:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
+  http_extensions_retry:
+    hosted: https://pub.anycode.dev
+    version: ^1.1.2
   json_annotation: ^4.8.1
   logging: ^1.2.0
   mime: ^1.0.5
-  oauth2: #^2.0.1
-    git:
-      url: https://github.com/anycode/oauth2.git
-      ref: cancelable
+  oauth2:
+    version: ^2.1.2
+    hosted: https://pub.anycode.dev
 
 dev_dependencies:
   lints: ^3.0.0

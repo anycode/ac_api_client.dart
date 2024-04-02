@@ -4,10 +4,18 @@ import 'dart:io';
 import 'package:ac_dart/ac_dart.dart';
 import 'package:cancellation_token_http/http.dart';
 import 'package:cancellation_token_http/testing.dart';
-import 'package:flutter/services.dart';
 
 import 'ac_api_client.dart';
+import 'model/api_exception.dart';
 import 'model/multipart.dart';
+
+/// Function providing a JSON object or a JSON string with mocked response based on request.
+/// Mocked JSON must contain at least two keys - `body` containing the actual response body
+/// and `code` containing the HTTP response code. Optional key `headers` can contain additional
+/// headers to be included in the response.
+///
+/// If there is an error inside the function, an [ApiException] or any other exception should be thrown.
+typedef MockJsonProvider = Future<dynamic> Function(Request request);
 
 /// Api client for testing purposes.
 ///
@@ -24,15 +32,23 @@ import 'model/multipart.dart';
 @Deprecated('Use MockApiClient instead')
 class MockApiClientDeprecated extends AcApiClient {
   /// Mock client handler to handle requests and return responses.
-  MockClientHandler mockClientHandler;
+  final MockClientHandler mockClientHandler;
+
+  /// Function providing a JSON with mocked response based on request.
+  /// See [MockJsonProvider] for more information. It's static so it can be
+  /// used in static method [defaultMockHandler].
+  static MockJsonProvider? _mockJsonProvider;
+
 
   /// Creates a mock API client with optional mock client handler. If no handler is provided, the default mock handler is used.
   MockApiClientDeprecated({
     super.baseUri,
     super.uriBuilder,
     super.defaultContentType,
-    this.mockClientHandler = defaultMockHandler,
-  });
+    MockClientHandler? mockHandler,
+    MockJsonProvider? mockJsonProvider,
+  })  : assert(mockHandler != null || mockJsonProvider != null, 'Either mockHandler or mockJsonProvider must be specified'),
+        mockClientHandler = mockHandler ?? defaultMockHandler;
 
   /// Mocked GET method to read data
   @override
@@ -397,22 +413,34 @@ class MockApiClientDeprecated extends AcApiClient {
   /// HTTP response code. The `headers` key is optional and can contain additional headers to be included in the response.
   /// If there is an error (missing or invalid JSON), an error response is returned.
   static Future<Response> defaultMockHandler(Request request) async {
+    dynamic mock;
     try {
-      final mock = await rootBundle.loadString('assets/mock/responses/${request.url.host}/${request.url.path.replaceAll('/', '-')}.json');
-      dynamic json;
+      mock = await _mockJsonProvider!(request);
+    } on ApiException catch (e) {
+      return Response('MOCK ERROR', e.code, reasonPhrase: e.reason);
+    } catch (e) {
+      return Response('MOCK ERROR', 500, reasonPhrase: 'Generic error with mock ${request.url.host}/${request.url.path}');
+    }
+    Map<String, dynamic> json;
+    if (mock is String) {
       try {
         json = jsonDecode(mock);
       } catch (e) {
-        return Response('MOCK INVALID JSON', 500, reasonPhrase: 'Mock ${request.url.host}/${request.url.path} is not valid json: $mock');
+        return Response('MOCK INVALID JSON', 500,
+            reasonPhrase: 'Mock for ${request.url.host}/${request.url.path} is not valid JSON string: $mock');
       }
-      if (json is Map && json.containsKey('body') && json.containsKey('code')) {
-        return Response(jsonEncode(json['body']), json['code'],
-            headers: json['headers'] ?? <String, String>{'Content-Type': 'application/json'});
-      } else {
-        throw Exception('Invalid MOCK JSON on path ${request.url.host}/${request.url.path}');
-      }
-    } catch (e) {
-      return Response('MOCK FILE NOT FOUND', 404, reasonPhrase: 'Mock ${request.url.host}/${request.url.path} not found');
+    } else if (mock is Map<String, dynamic>) {
+      json = mock;
+    } else {
+      return Response('MOCK INVALID JSON', 500,
+          reasonPhrase: 'Mock for ${request.url.host}/${request.url.path} must be a string or a map: $mock');
+    }
+    if (json.containsKey('body') && json.containsKey('code')) {
+      return Response(jsonEncode(json['body']), json['code'],
+          headers: json['headers'] ?? <String, String>{'Content-Type': 'application/json'});
+    } else {
+      return Response('MOCK INVALID JSON', 500,
+          reasonPhrase: 'Mock JSON for ${request.url.host}/${request.url.path} does not contain keys `body` and `code`: $mock');
     }
   }
 }
