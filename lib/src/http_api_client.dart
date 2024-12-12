@@ -450,10 +450,13 @@ class HttpApiClient extends AcApiClient {
           request.body = body.toString();
         }
       } else if (ContentType.json.value == contentType) {
-        // other types - encode as json
+        // JSON mime type - encode as json
         request.body = json.encode(body);
+      } else if (! ContentType.parse(contentType).isBinary) {
+        // non-binary mime type - stringify
+        request.body = body.toString();
       } else {
-        // unknown body type
+        // unknown binary body type
         throw ArgumentError('Invalid request body "$body".');
       }
     }
