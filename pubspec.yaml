@@ -1,6 +1,6 @@
 name: ac_api_client
 description: AnyCode Dart API client (HTTP client with cancelable requests)
-version: 0.1.5
+version: 0.1.6
 homepage: https://github.com/anycode/ac_api_client.dart
 repository: https://github.com/anycode/ac_api_client.dart
 publish_to: https://pub.anycode.dev
@@ -11,7 +11,7 @@ environment:
 dependencies:
   ac_dart:
     hosted: https://pub.anycode.dev
-    version: ^0.1.6
+    version: ^0.1.11
   cancellation_token_http: ^2.0.0
   cross_file: ^0.3.4+1
   http_extensions:

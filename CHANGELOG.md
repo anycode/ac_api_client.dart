@@ -1,3 +1,7 @@
+## 0.1.6
+
+- feat: Stringify non-binary body
+
 ## 0.1.5
 
 - feat: export `ac_dart` pkg
