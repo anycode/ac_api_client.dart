@@ -8,6 +8,7 @@ export 'package:http_extensions_cache/http_extensions_cache.dart';
 export 'package:http_extensions_headers/http_extensions_headers.dart';
 export 'package:http_extensions_log/http_extensions_log.dart';
 export 'package:http_extensions_retry/http_extensions_retry.dart';
+export 'package:oauth2/oauth2.dart' show Credentials;
 
 export 'src/ac_api_client.dart';
 export 'src/decode_response.dart';

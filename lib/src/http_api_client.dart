@@ -19,6 +19,7 @@ import 'model/api_error.dart';
 import 'model/api_exception.dart';
 import 'model/media.dart';
 import 'model/multipart.dart';
+import 'oauth2_client.dart';
 
 /// Base class for all HTTP clients.
 /// Contains error handling and logging extensions. Uses [http_extensions] packages (with request cancellation patch)
@@ -51,6 +52,9 @@ class HttpApiClient extends AcApiClient {
   /// if not specified [logger] is used. [httpLogger] is logger for [LogExtension], if not specified [logger] is used.
   /// [errorLogger] is a logger used in default error handler, if not specified [logger] is used.
   /// [errorHandler] is a custom handler for errors.
+  /// Optionally, [oauthAuthorizationUri], [oauthIdentifier], [oauthSecret], [oauthScopes] and [oAuthServiceProvider] can be
+  /// provided to enable OAuth2 authentication. In this case, [inner] client will be wrapped with [OAuth2Client].
+  /// It's possible to pass own OAuth2 client directly in [inner] parameter.
   HttpApiClient({
     super.baseUri,
     super.uriBuilder,
@@ -66,11 +70,18 @@ class HttpApiClient extends AcApiClient {
     Logger? performanceLogger,
     Logger? httpLogger,
     Logger? errorLogger,
+    OAuth2ServiceProvider? oAuthServiceProvider,
     this.errorHandler,
     this.defaultTimeout = const Duration(minutes: 5),
   })  : errorLogger = errorLogger ?? logger ?? Logger('Error'),
         _client = ExtendedClient(
-          inner: inner,
+          inner: oAuthServiceProvider != null
+              // OAuth2 info provided, wrap inner client with oAuth2 client
+              ? OAuth2Client(
+                  inner: inner,
+                  oAuthServiceProvider: oAuthServiceProvider,
+                )
+              : inner,
           extensions: [
             if (baseUri != null)
               BaseUrlExtension(
@@ -452,7 +463,7 @@ class HttpApiClient extends AcApiClient {
       } else if (ContentType.json.value == contentType) {
         // JSON mime type - encode as json
         request.body = json.encode(body);
-      } else if (! ContentType.parse(contentType).isBinary) {
+      } else if (!ContentType.parse(contentType).isBinary) {
         // non-binary mime type - stringify
         request.body = body.toString();
       } else {
