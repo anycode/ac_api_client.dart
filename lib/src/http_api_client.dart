@@ -547,12 +547,12 @@ class HttpApiClient extends AcApiClient {
       if (err is Map) {
         error = ApiError.fromJson(err as Map<String, dynamic>);
       } else {
-        error = ApiError(status: response.statusCode, error: err.toString(), headers: response.headers);
+        error = ApiError(statusCode: response.statusCode, message: err.toString(), headers: response.headers);
       }
     } else if ([ContentType.html.mimeType, ContentType.text.mimeType].contains(contentType.mimeType)) {
-      error = ApiError(status: response.statusCode, error: response.bodyBytes.toString(), headers: response.headers);
+      error = ApiError(statusCode: response.statusCode, message: response.bodyBytes.toString(), headers: response.headers);
     } else {
-      error = ApiError(status: response.statusCode, error: 'Unknown error', headers: response.headers);
+      error = ApiError(statusCode: response.statusCode, message: 'Unknown error', headers: response.headers);
     }
     final exception = ApiException(response.statusCode, response.reasonPhrase, error);
     errorLogger?.severe(exception, error, StackTrace.current);
@@ -561,5 +561,5 @@ class HttpApiClient extends AcApiClient {
 }
 
 void throwNotImplementedYet() {
-  throw ApiException(500, 'Funkce nebyla implementována', ApiError(status: 500, error: 'Funkce nebyla implementována'));
+  throw ApiException(500, 'Funkce nebyla implementována', ApiError(statusCode: 500, message: 'Funkce nebyla implementována'));
 }
