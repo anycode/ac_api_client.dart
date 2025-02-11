@@ -545,21 +545,21 @@ class HttpApiClient extends AcApiClient {
     if ([ContentType.json.mimeType, ContentTypeExt.errorJson.mimeType].contains(contentType.mimeType)) {
       final dynamic err = json.decodeBytes(response.bodyBytes);
       if (err is Map) {
-        error = ApiError.fromJson(err as Map<String, dynamic>);
+        error = ApiError.fromJson(err as Map<String, dynamic>, response.statusCode);
       } else {
-        error = ApiError(statusCode: response.statusCode, message: err.toString(), headers: response.headers);
+        error = ApiError(statusCode: response.statusCode, message: err.toString());
       }
     } else if ([ContentType.html.mimeType, ContentType.text.mimeType].contains(contentType.mimeType)) {
-      error = ApiError(statusCode: response.statusCode, message: response.bodyBytes.toString(), headers: response.headers);
+      error = ApiError(statusCode: response.statusCode, message: response.bodyBytes.toString());
     } else {
-      error = ApiError(statusCode: response.statusCode, message: 'Unknown error', headers: response.headers);
+      error = ApiError(statusCode: response.statusCode, message: 'Unknown error');
     }
-    final exception = ApiException(response.statusCode, response.reasonPhrase, error);
+    final exception = ApiException(response.statusCode, response.reasonPhrase, response.headers, error);
     errorLogger?.severe(exception, error, StackTrace.current);
     throw exception;
   }
 }
 
 void throwNotImplementedYet() {
-  throw ApiException(500, 'Funkce nebyla implementována', ApiError(statusCode: 500, message: 'Funkce nebyla implementována'));
+  throw ApiException(500, 'Funkce nebyla implementována', null, ApiError(statusCode: 500, message: 'Funkce nebyla implementována'));
 }

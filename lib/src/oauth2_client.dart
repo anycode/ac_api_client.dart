@@ -73,7 +73,7 @@ class OAuth2Client extends BaseClient {
           rethrow;
         } catch (e) {
           oAuthServiceProvider.oAuthCredentials = null;
-          throw ApiException(400, e.toString(), null);
+          throw ApiException(400, e.toString(), null, null);
         }
       }
       _client = oauthClient;

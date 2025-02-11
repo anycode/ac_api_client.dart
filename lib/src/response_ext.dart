@@ -50,7 +50,7 @@ extension ResponseExt on http.Response {
       if (data is List) {
         return List.of(data).cast<S>().map((e) => converter(e)).toList();
       } else {
-        throw ApiException(500, 'Invalid list response', null);
+        throw ApiException(500, 'Invalid list response', headers, null);
       }
     } catch (e) {
       rethrow;
@@ -83,7 +83,7 @@ extension ResponseExt on http.Response {
         print(paged);
         return paged;
       } else {
-        throw ApiException(500, 'Invalid paged response', null);
+        throw ApiException(500, 'Invalid paged response', headers, null);
       }
     } catch (e) {
       rethrow;
