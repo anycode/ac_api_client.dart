@@ -307,7 +307,8 @@ abstract class AcApiClient {
         if (path?.startsWith('/') == false) {
           path = '${uri.path}/$path';
         }
-        return uri.replace(host: host, path: path, port: port, queryParameters: queryParameters);
+        final qp = queryParameters?.isNotEmpty == true ? queryParameters : null;
+        return uri.replace(host: host, path: path, port: port, queryParameters: qp);
       };
 }
 
